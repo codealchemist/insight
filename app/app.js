@@ -11,6 +11,7 @@ angular
     'about',
     'contact',
     'facebookLogin',
-    'facebookLogout'
+    'facebookLogout',
+    'dashboard'
   ])
 ;

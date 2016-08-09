@@ -6,7 +6,7 @@ angular
 
 //------------------------------------------------------------
 
-function init(routingProvider) {
+function init(routingProvider, $rootScope, $state, $facebook) {
   var states = [
     {
       name: 'welcome',
@@ -17,4 +17,13 @@ function init(routingProvider) {
 
   var otherwise = '/welcome';
   routingProvider.addStates(states, otherwise);
+
+  //------------------------------
+  
+  // open route when logged out from facebook
+  $rootScope.$on('fb.auth.logout', open);
+
+  function open() {
+    $state.go('welcome');
+  }
 }

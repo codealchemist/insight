@@ -3,6 +3,10 @@
     <a href="#">Home</a>
   </li>
 
+  <li ng-class="{'active': vm.currentStateName == 'dashboard', 'hidden': vm.currentStateName != 'dashboard'}">
+    <a href="#">Dashboard</a>
+  </li>
+
   <li ng-class="{'active': vm.currentStateName == 'about'}">
     <a href="#/about">About</a>
   </li>
