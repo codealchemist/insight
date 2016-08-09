@@ -1,0 +1,17 @@
+<ul class="nav nav-pills pull-right">
+  <li ng-class="{'active': vm.currentStateName == 'welcome'}">
+    <a href="#">Home</a>
+  </li>
+
+  <li ng-class="{'active': vm.currentStateName == 'about'}">
+    <a href="#/about">About</a>
+  </li>
+
+  <li ng-class="{'active': vm.currentStateName == 'contact'}">
+    <a href="#/contact">Contact</a>
+  </li>
+
+  <li facebook-logout>
+    <a href="#">Logout</a>
+  </li>
+</ul>
