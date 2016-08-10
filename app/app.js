@@ -12,6 +12,7 @@ angular
     'contact',
     'facebookLogin',
     'facebookLogout',
+    'facebookMe',
     'dashboard'
   ])
 ;

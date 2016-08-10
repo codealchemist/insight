@@ -58,11 +58,11 @@ function facebookLoginController($scope, $element, $attrs, $facebook) {
     //------------------------------
 
     function onLoginOk(response) {
-      console.log('onLoginOk:', response);
+      
     }
 
     function onLoginError(response) {
-      console.log('onLoginError:', response);
+      
     }
   }
 
