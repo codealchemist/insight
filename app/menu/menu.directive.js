@@ -27,7 +27,16 @@ function fiMenu() {
   }
 }
 
-function fiMenuController($scope, $element, $attrs, $state) {
+function fiMenuController($scope, $element, $attrs, $state, $facebook) {
   var vm = this;
   vm.currentStateName = $state.current.name;
+  vm.isLoggedInToFacebook = false;
+
+  $facebook
+    .getLoginStatus()
+    .then(function(response) {
+      if (response.status !== 'unknown') vm.isLoggedInToFacebook = true;
+    });
+
+  $scope.$on('fb.auth.logout', () => vm.isLoggedInToFacebook = false);
 }

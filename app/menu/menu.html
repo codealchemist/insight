@@ -3,8 +3,8 @@
     <a href="#">Home</a>
   </li>
 
-  <li ng-class="{'active': vm.currentStateName == 'dashboard', 'hidden': vm.currentStateName != 'dashboard'}">
-    <a href="#">Dashboard</a>
+  <li ng-if="vm.isLoggedInToFacebook" ng-class="{'active': vm.currentStateName == 'dashboard'}">
+    <a href="#/dashboard">Dashboard</a>
   </li>
 
   <li ng-class="{'active': vm.currentStateName == 'about'}">
