@@ -2,11 +2,11 @@
 
 angular
   .module('footer')
-  .directive('fiFooter', fiFooter);
+  .directive('appFooter', appFooter);
 
 //------------------------------------------------------------
 
-function fiFooter() {
+function appFooter() {
   var directive = {
     link: link,
     templateUrl: 'footer/footer.html',

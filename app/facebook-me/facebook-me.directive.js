@@ -48,8 +48,10 @@ function facebookMeController($scope, $element, $attrs, $facebook) {
   ];
   var fields = fieldsArray.join(',');
 
+  // TODO: add caching layer
+
   $facebook
-  	.api('me?fields=' + fields)
+  	.cachedApi('me?fields=' + fields)
   	.then( setMe );
 
 	function setMe(response) {

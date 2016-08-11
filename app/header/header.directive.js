@@ -2,11 +2,11 @@
 
 angular
   .module('header')
-  .directive('fiHeader', fiHeader);
+  .directive('appHeader', appHeader);
 
 //------------------------------------------------------------
 
-function fiHeader() {
+function appHeader() {
   var directive = {
     link: link,
     templateUrl: 'header/header.html',
