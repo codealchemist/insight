@@ -2,6 +2,7 @@ $icon-font-path: '../fonts/';
 
 // bower:scss
 @import "bower_components/bootstrap-sass/assets/stylesheets/_bootstrap.scss";
+@import "bower_components/css-helpers/helpers.scss";
 // endbower
 
 .browserupgrade {
@@ -77,6 +78,11 @@ body {
       }
     }
   }
+}
+
+// reset chrome outlines
+*:focus {
+  outline: none;
 }
 
 /* Responsive: Portrait tablets and up */

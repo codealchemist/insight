@@ -10,7 +10,7 @@ function facebookFriends() {
   var directive = {
     link: link,
     templateUrl: 'facebook-friends/facebook-friends.html',
-    restrict: 'A',
+    restrict: 'E',
     scope: {
 			
     },
@@ -27,33 +27,30 @@ function facebookFriends() {
   }
 }
 
-function facebookFriendsController($scope, $element, $attrs, $facebook) {
+function facebookFriendsController($scope, $element, $attrs, $interval, $facebook) {
   'ngInject';
 
   var vm = this;
   vm.property = $attrs.facebookFriends;
-  vm.me = {};
-
-  var fieldsArray = [
-    'id',
-    'name',
-    'first_name',
-    'gender',
-    'cover',
-    'email',
-    'languages',
-    'link',
-    'quotes',
-    'sports'
-  ];
-  var fields = fieldsArray.join(',');
+  vm.friends = {};
+  vm.total = 0;
 
   $facebook
-  	.api('me?fields=' + fields)
-  	.then( setMe );
+  	.cachedApi(`me?fields=friends`)
+  	.then( setFriends );
 
-	function setMe(response) {
-		console.log('ME:', response);
-		vm.me = response;
+	function setFriends(response) {
+		vm.setFriends = response.friends;
+    var total = response.friends.summary.total_count;
+    graph(total);
 	}
+
+  function graph(total) {
+    var intervalRef = $interval(increment, 5);
+
+    function increment() {
+      ++vm.total;
+      if (vm.total >= total) $interval.cancel(intervalRef);
+    }
+  }
 }

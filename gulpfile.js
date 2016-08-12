@@ -4,6 +4,7 @@ const gulpLoadPlugins = require('gulp-load-plugins');
 const browserSync = require('browser-sync');
 const del = require('del');
 const wiredep = require('wiredep').stream;
+const concat = require('gulp-concat');
 
 const $ = gulpLoadPlugins();
 const reload = browserSync.reload;
@@ -20,6 +21,11 @@ gulp.task('styles', () => {
     .pipe($.autoprefixer({browsers: ['> 1%', 'last 2 versions', 'Firefox ESR']}))
     .pipe($.sourcemaps.write())
     .pipe(gulp.dest('.tmp'))
+
+    // get just one css file
+    .pipe(concat('main.css'))
+    .pipe(gulp.dest('.tmp/core'))
+
     .pipe(reload({stream: true}));
 });
 
@@ -98,6 +104,7 @@ gulp.task('clean', del.bind(null, ['.tmp', 'dist']));
 
 gulp.task('serve', ['wiredep', 'styles', 'scripts', 'fonts'], () => {
   browserSync({
+    browser: 'google chrome',
     notify: false,
     port: 9000,
     server: {

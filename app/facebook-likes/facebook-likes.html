@@ -1,0 +1,16 @@
+<div class="facebook-insight facebook-likes jumbotron align-bottom">
+	<h4>
+		Your Likes By Category
+		<i 
+			class="glyphicon glyphicon-btn glyphicon-plus"
+			ng-class="{'disabled': !vm.next}"
+			title="Load more likes"
+			ng-click="vm.getMore()"
+			ng-disabled="!vm.next"
+		>
+		</i>
+	</h4>
+	<em>Last {{vm.likes.length}}</em>
+	<div id="facebook-likes-graph" class="facebook-likes-graph"></div>
+	<em>Top {{vm.limit}}</em>
+</div>

@@ -13,6 +13,8 @@ angular
     'facebookLogin',
     'facebookLogout',
     'facebookMe',
+    'facebookFriends',
+    'facebookLikes',
     'dashboard'
   ])
 ;

@@ -6,7 +6,9 @@
     "modernizr": "~2.8.1",
     "angular-ui-router": "~0.3.1",
     "ng-facebook": "~0.1.6",
-    "animate.css": "~3.5.2"
+    "animate.css": "~3.5.2",
+    "d3": "^3.2.1",
+    "css-helpers": "css-helpers-lib#*"
   },
   "overrides": {
     "bootstrap-sass": {

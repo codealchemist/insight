@@ -1,0 +1,50 @@
+.facebook-likes {
+  height: 100%;
+
+  .glyphicon-btn {
+    background: white;
+    padding: 10px;
+    border-radius: 50%;
+    border: 1px solid black;
+    font-size: 12px;
+    cursor: pointer;
+
+    &.disabled {
+      color: #ccc;
+      border-color: #ccc;
+      cursor: default;
+    }
+  }
+}
+
+svg {
+    width: 100%;
+    height: 100%;
+
+    text {
+      cursor: default;
+    }
+}
+
+path.slice{
+    stroke-width:2px;
+
+    &.highlight {
+      fill: rgb(255, 255, 255) !important;
+    }
+}
+
+polyline{
+    opacity: .3;
+    stroke: black;
+    stroke-width: 2px;
+    fill: none;
+
+    &.highlight {
+      opacity: .7;
+    }
+}
+
+.highlight {
+  font-weight: bold;
+}
