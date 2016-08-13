@@ -11,5 +11,5 @@ function setup($facebookProvider, configProvider) {
 
   // set Facebook app id and permissions
   $facebookProvider.setAppId(config.facebookAppId);
-  $facebookProvider.setPermissions('email,user_likes,user_friends');
+  $facebookProvider.setPermissions('email,user_likes,user_friends,publish_actions,user_photos');
 }

@@ -1,0 +1,38 @@
+<div class="row-fluid">
+	<div class="col-md-12">
+		<h1>Share with your friends</h1>
+		<h4>It was cool to discover which categories you like the most right?</h4>
+		<h4>Your friends will be surprised too!</h4>
+
+		<p>Is there anything you want to say?</p>
+		<textarea 
+			class="form-control"
+			rows="5"
+			ng-model="vm.message"
+			placeholder="This message will be shown along with the image below."
+		></textarea>
+
+		<img class="full-width" ng-src="{{vm.urlData}}"></img>
+
+		<div class="form-group text-right">
+			<button
+				type="button"
+				class="btn btn-default"
+				ng-click="$close()"
+			>
+				Cancel
+			</button>
+
+			<button 
+				type="button"
+				class="btn btn-primary"
+				ng-class="{'disabled': vm.sharing}"
+				ng-click="vm.share()"
+				ng-disabled="vm.sharing"
+			>
+				<span ng-if="!vm.sharing">Share!</span>
+				<span ng-if="vm.sharing">Sharing...</span>
+			</button>
+		</div>
+	</div>
+</div>

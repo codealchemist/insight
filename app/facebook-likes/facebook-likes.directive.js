@@ -12,7 +12,7 @@ function facebookLikes() {
     templateUrl: 'facebook-likes/facebook-likes.html',
     restrict: 'E',
     scope: {
-			
+      
     },
     controller: facebookLikesController,
     controllerAs: 'vm'
@@ -27,7 +27,7 @@ function facebookLikes() {
   }
 }
 
-function facebookLikesController($scope, $element, $attrs, $facebook, $http) {
+function facebookLikesController($scope, $element, $attrs, $facebook, $http, $uibModal) {
   'ngInject';
 
   var vm = this;
@@ -36,8 +36,10 @@ function facebookLikesController($scope, $element, $attrs, $facebook, $http) {
   vm.likes = {};
   vm.next;
   vm.getMore = getMore;
+  vm.share;
 
-  var svg = createSvg();
+  var graphId = 'facebook-likes-graph';
+  var svg = createSvg(graphId);
   var fieldsArray = [
     'created_time',
     'written_by',
@@ -50,337 +52,434 @@ function facebookLikesController($scope, $element, $attrs, $facebook, $http) {
   var fields = fieldsArray.join(',');
 
   $facebook
-  	.cachedApi(`me?fields=likes{${fields}}`)
-  	.then(setLikes)
-  	.then(setNext)
-  	.then((response) => graph(svg, vm.likes))
-  	.then((response) => setEvents(svg, vm.likes));
+    .cachedApi(`me?fields=likes{${fields}}`)
+    .then(setLikes)
+    .then(setNext)
+    .then( (response) => graph(svg, vm.likes) )
+    .then( (response) => setEvents(svg, vm.likes) )
+    .then(setSharingMethod);
 
-	//------------------------------
+  //------------------------------
 
-	function setLikes(response) {
-		vm.likes = response.likes.data;
-		return response;
-	}
+  function setLikes(response) {
+    vm.likes = response.likes.data;
+    return response;
+  }
 
-	function setNext(response) {
-		vm.next = response.likes.paging.next;
-		return response;
-	}
+  function setNext(response) {
+    vm.next = response.likes.paging.next;
+    return response;
+  }
 
-	function getMore() {
-		if (vm.next) {
-			$http
-				.get(vm.next)
-				.then(getMoreOk);
-		}
+  vm.test = function() {
+    console.log('TEST');
+  };
 
-		function getMoreOk(response) {
-			if (response.data && response.data.data && response.data.data.length) {
-				vm.likes = vm.likes.concat(response.data.data);
-				vm.next = response.data.paging.next;
-				graph(svg, vm.likes);
-			}
-		}
-	}
+  function setSharingMethod() {
+    vm.share = function() {
+      createPng(graphId, onCreatePngOk);
 
-	function createSvg() {
-		var svg = d3.select('#facebook-likes-graph')
-			.append("svg")
-			.append("g");
+      function onCreatePngOk(binaryData, urlData) {
+        // window.open(urlData, 'Insight Image');
 
-		return svg;
-	}
+        var modalInstance = $uibModal.open({
+          animation: true,
+          templateUrl: 'facebook-likes/facebook-likes-share.modal.html',
+          controller: 'facebookLikesShareController',
+          controllerAs: 'vm',
+          // size: size,
+          resolve: {
+            params: {
+              binaryData: binaryData,
+              urlData: urlData
+            }
+          }
+        });
+        return;
 
-	function setEvents(svg, data) {
-		// set events
-		var timeoutRef;
-		$(window).resize(function() {
-			// use timeout to avoid redrawing too many times while
-			// the resize event fires
-			clearTimeout(timeoutRef);
-			timeoutRef = setTimeout(function() {
-				svg.selectAll('g').remove();
-				graph(svg, data);
-			}, 100);
-		});
-	}
+        vm.sharing = true;
+      }
+    };
+  }
 
-	function graph(svg, data) {
-		svg.append("g")
-			.attr("class", "slices");
-		svg.append("g")
-			.attr("class", "labels");
-		svg.append("g")
-			.attr("class", "lines");
+  function getMore() {
+    if (vm.next) {
+      $http
+        .get(vm.next)
+        .then(getMoreOk);
+    }
 
-		var width = getWidth();
-		var height = getHeight();
-		setContainerHeight(height);
+    function getMoreOk(response) {
+      if (response.data && response.data.data && response.data.data.length) {
+        vm.likes = vm.likes.concat(response.data.data);
+        vm.next = response.data.paging.next;
+        graph(svg, vm.likes);
+      }
+    }
+  }
 
-		svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+  function createSvg(id) {
+    var svg = d3.select('#' + id)
+      .append("svg")
+      .attr('id', 'svg-' + id)
+      .attr('style', 'font-family: "Helvetica Neue", Helvetica, Arial, sans-serif')
+      .append("g");
 
-		function getRadius(percentage) {
-			percentage = percentage || 1;
+    return svg;
+  }
 
-			var radius = Math.min(width * percentage, height * percentage) / 2;
-			return radius;
-		}
+  function setEvents(svg, data) {
+    // set events
+    var timeoutRef;
+    $(window).resize(function() {
+      // use timeout to avoid redrawing too many times while
+      // the resize event fires
+      clearTimeout(timeoutRef);
+      timeoutRef = setTimeout(function() {
+        svg.selectAll('g').remove();
+        graph(svg, data);
+      }, 100);
+    });
 
-		var graphData = getGraphData(data);
-		setDataOnGraph(svg, graphData, getRadius);
-	} // end graph
+    return {svg, data};
+  }
 
-	function setDataOnGraph(svg, data, getRadius) {
-		// set graph components
-		var key = function(d){ return d.data.label; };
-		var color = getColor(data);
+  function graph(svg, data) {
+    svg.append("g")
+      .attr("class", "slices");
+    svg.append("g")
+      .attr("class", "labels");
+    svg.append("g")
+      .attr("class", "lines");
 
-		var pie = d3.layout.pie()
-			.sort(null)
-			.value(function(d) {
-				return d.value;
-			});
+    var width = getWidth();
+    var height = getHeight();
+    setContainerHeight(height);
 
-		var arc = d3.svg.arc()
-			.outerRadius(getRadius() * 0.8)
-			.innerRadius(getRadius() * 0.4);
+    svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-		var outerArc = d3.svg.arc()
-			.innerRadius(getRadius() * 0.9)
-			.outerRadius(getRadius() * 0.9);
+    function getRadius(percentage) {
+      percentage = percentage || 1;
 
-		function midAngle(d){
-			return d.startAngle + (d.endAngle - d.startAngle)/2;
-		}
+      var radius = Math.min(width * percentage, height * percentage) / 2;
+      return radius;
+    }
 
-		// compose graph
-		var components = {svg, data, pie, color, arc, outerArc, getRadius, midAngle, key};
-		setSlices(components);
-		setLabels(components);
-		setLines(components);
-	};
+    var graphData = getGraphData(data);
+    setDataOnGraph(svg, graphData, getRadius);
+  } // end graph
 
-	function setSlices({svg, data, pie, color, arc, key}) {
-		var slice = svg.select(".slices")
-			.selectAll("path.slice")
-			.data(pie(data), key);
+  function setDataOnGraph(svg, data, getRadius) {
+    // set graph components
+    var key = function(d){ return d.data.label; };
+    var color = getColor(data);
 
-		slice.enter()
-			.insert("path")
-			.style("fill", function(d) { return color(d.data.label); })
-			.attr("class", "slice")
-			.attr("id", (d) => `slice-${d.data.id}`)
-			.on('mouseover', function(d){
-				// highlight slice
-				d3.select(this)
-					.classed('highlight', true);
+    var pie = d3.layout.pie()
+      .sort(null)
+      .value(function(d) {
+        return d.value;
+      });
 
-				// highlight text
-				d3.select(`#text-${d.data.id}`)
-					.classed('highlight', true);
+    var arc = d3.svg.arc()
+      .outerRadius(getRadius() * 0.8)
+      .innerRadius(getRadius() * 0.4);
 
-				// highlight line
-				d3.select(`#line-${d.data.id}`)
-					.classed('highlight', true);
-			})
-			.on('mouseout', function(d){
-				// remove slice highlighting
-				d3.select(this)
-					.classed('highlight', false);
+    var outerArc = d3.svg.arc()
+      .innerRadius(getRadius() * 0.9)
+      .outerRadius(getRadius() * 0.9);
 
-				// remove text highlighting
-				d3.select(`#text-${d.data.id}`)
-					.classed('highlight', false);
+    function midAngle(d){
+      return d.startAngle + (d.endAngle - d.startAngle)/2;
+    }
 
-				// remove line highlighting
-				d3.select(`#line-${d.data.id}`)
-					.classed('highlight', false);
-			});
+    // compose graph
+    var components = {svg, data, pie, color, arc, outerArc, getRadius, midAngle, key};
+    setSlices(components);
+    setLabels(components);
+    setLines(components);
+  };
 
-		slice		
-			.transition().duration(1000)
-			.attrTween("d", function(d) {
-				this._current = this._current || d;
-				var interpolate = d3.interpolate(this._current, d);
-				this._current = interpolate(0);
-				return function(t) {
-					return arc(interpolate(t));
-				};
-			})
+  function setSlices({svg, data, pie, color, arc, key}) {
+    var slice = svg.select(".slices")
+      .selectAll("path.slice")
+      .data(pie(data), key);
 
-		slice
-			.exit()
-			.remove();
-	}
+    slice.enter()
+      .insert("path")
+      .style("fill", function(d) { return color(d.data.label); })
+      .attr("class", "slice")
+      .attr("id", (d) => `slice-${d.data.id}`)
+      .on('mouseover', function(d){
+        // highlight slice
+        d3.select(this)
+          .classed('highlight', true);
 
-	function setLabels({svg, data, pie, outerArc, getRadius, midAngle, key}) {
-		var text = svg.select(".labels")
-			.selectAll("text")
-			.data(pie(data), key);
+        // highlight text
+        d3.select(`#text-${d.data.id}`)
+          .classed('highlight', true);
 
-		text.enter()
-			.append("text")
-			.attr("dy", ".35em")
-			.text(function(d) {
-				return d.data.label;
-			})
-			.attr("id", (d) => `text-${d.data.id}`)
-			.on('mouseover', function(d){
-				// highlight text
-				d3.select(this)
-					.classed('highlight', true);
+        // highlight line
+        d3.select(`#line-${d.data.id}`)
+          .classed('highlight', true);
+      })
+      .on('mouseout', function(d){
+        // remove slice highlighting
+        d3.select(this)
+          .classed('highlight', false);
 
-				// highlight slice
-				d3.select(`#slice-${d.data.id}`)
-					.classed('highlight', true);
+        // remove text highlighting
+        d3.select(`#text-${d.data.id}`)
+          .classed('highlight', false);
 
-				// highlight line
-				d3.select(`#line-${d.data.id}`)
-					.classed('highlight', true);
-			})
-			.on('mouseout', function(d){
-				// remove text highlighting
-				d3.select(this)
-					.classed('highlight', false);
+        // remove line highlighting
+        d3.select(`#line-${d.data.id}`)
+          .classed('highlight', false);
+      });
 
-				// remove slice highlighting
-				d3.select(`#slice-${d.data.id}`)
-					.classed('highlight', false);
+    slice   
+      .transition().duration(1000)
+      .attrTween("d", function(d) {
+        this._current = this._current || d;
+        var interpolate = d3.interpolate(this._current, d);
+        this._current = interpolate(0);
+        return function(t) {
+          return arc(interpolate(t));
+        };
+      })
 
-				// remove line highlighting
-				d3.select(`#line-${d.data.id}`)
-					.classed('highlight', false);
-			});
+    slice
+      .exit()
+      .remove();
+  }
 
-		text.transition().duration(1000)
-			.attrTween("transform", function(d) {
-				this._current = this._current || d;
-				var interpolate = d3.interpolate(this._current, d);
-				this._current = interpolate(0);
-				return function(t) {
-					var d2 = interpolate(t);
-					var pos = outerArc.centroid(d2);
-					pos[0] = getRadius() * (midAngle(d2) < Math.PI ? 1 : -1);
-					return "translate("+ pos +")";
-				};
-			})
-			.styleTween("text-anchor", function(d){
-				this._current = this._current || d;
-				var interpolate = d3.interpolate(this._current, d);
-				this._current = interpolate(0);
-				return function(t) {
-					var d2 = interpolate(t);
-					return midAngle(d2) < Math.PI ? "start":"end";
-				};
-			});
+  function setLabels({svg, data, pie, outerArc, getRadius, midAngle, key}) {
+    var text = svg.select(".labels")
+      .selectAll("text")
+      .data(pie(data), key);
 
-		text
-			.exit()
-			.remove();
-	}
+    text.enter()
+      .append("text")
+      .attr("dy", ".35em")
+      .text(function(d) {
+        return d.data.label;
+      })
+      .attr("id", (d) => `text-${d.data.id}`)
+      .on('mouseover', function(d){
+        // highlight text
+        d3.select(this)
+          .classed('highlight', true);
 
-	function setLines({svg, data, pie, arc, outerArc, getRadius, midAngle, key}) {
-		var polyline = svg.select(".lines")
-			.selectAll("polyline")
-			.data(pie(data), key);
-		
-		polyline.enter()
-			.append("polyline")
-			.attr("id", (d) => `line-${d.data.id}`)
-			.on('mouseover', function(d){
-				// highlight line
-				d3.select(this)
-					.classed('highlight', true);
+        // highlight slice
+        d3.select(`#slice-${d.data.id}`)
+          .classed('highlight', true);
 
-				// highlight text
-				d3.select(`#text-${d.data.id}`)
-					.classed('highlight', true);
+        // highlight line
+        d3.select(`#line-${d.data.id}`)
+          .classed('highlight', true);
+      })
+      .on('mouseout', function(d){
+        // remove text highlighting
+        d3.select(this)
+          .classed('highlight', false);
 
-				// highlight slice
-				d3.select(`#slice-${d.data.id}`)
-					.classed('highlight', true);
-			})
-			.on('mouseout', function(d){
-				// remove line highlighting
-				d3.select(this)
-					.classed('highlight', false);
+        // remove slice highlighting
+        d3.select(`#slice-${d.data.id}`)
+          .classed('highlight', false);
 
-				// remove text highlighting
-				d3.select(`#text-${d.data.id}`)
-					.classed('highlight', false);
+        // remove line highlighting
+        d3.select(`#line-${d.data.id}`)
+          .classed('highlight', false);
+      });
 
-				// remove slice highlighting
-				d3.select(`#slice-${d.data.id}`)
-					.classed('highlight', false);
-			});
+    text.transition().duration(1000)
+      .attrTween("transform", function(d) {
+        this._current = this._current || d;
+        var interpolate = d3.interpolate(this._current, d);
+        this._current = interpolate(0);
+        return function(t) {
+          var d2 = interpolate(t);
+          var pos = outerArc.centroid(d2);
+          pos[0] = getRadius() * (midAngle(d2) < Math.PI ? 1 : -1);
+          return "translate("+ pos +")";
+        };
+      })
+      .styleTween("text-anchor", function(d){
+        this._current = this._current || d;
+        var interpolate = d3.interpolate(this._current, d);
+        this._current = interpolate(0);
+        return function(t) {
+          var d2 = interpolate(t);
+          return midAngle(d2) < Math.PI ? "start":"end";
+        };
+      });
 
-		polyline.transition().duration(1000)
-			.attrTween("points", function(d){
-				this._current = this._current || d;
-				var interpolate = d3.interpolate(this._current, d);
-				this._current = interpolate(0);
-				return function(t) {
-					var d2 = interpolate(t);
-					var pos = outerArc.centroid(d2);
-					pos[0] = getRadius() * 0.95 * (midAngle(d2) < Math.PI ? 1 : -1);
-					return [arc.centroid(d2), outerArc.centroid(d2), pos];
-				};			
-			});
-		
-		polyline.exit()
-			.remove();
-	}
+    text
+      .exit()
+      .remove();
+  }
 
-	function getWidth() {
-		var width = $('#facebook-likes-graph').width() - 40;
-		return width;
-	}
+  function setLines({svg, data, pie, arc, outerArc, getRadius, midAngle, key}) {
+    var polyline = svg.select(".lines")
+      .selectAll("polyline")
+      .data(pie(data), key);
+    
+    polyline.enter()
+      .append("polyline")
+      .attr("id", (d) => `line-${d.data.id}`)
+      .attr('style', 'opacity: .3; stroke: black; stroke-width: 2px; fill: none;')
+      .on('mouseover', function(d){
+        // highlight line
+        d3.select(this)
+          .classed('highlight', true);
 
-	function getHeight() {
-		var width = getWidth();
-		var height = width / 2;
-		return height;
-	}
+        // highlight text
+        d3.select(`#text-${d.data.id}`)
+          .classed('highlight', true);
 
-	function setContainerHeight(height) {
-		$('#facebook-likes-graph').height(height);
-	}
+        // highlight slice
+        d3.select(`#slice-${d.data.id}`)
+          .classed('highlight', true);
+      })
+      .on('mouseout', function(d){
+        // remove line highlighting
+        d3.select(this)
+          .classed('highlight', false);
 
-	function getColor() {
-		var scale = d3.scale.ordinal()
-			.range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+        // remove text highlighting
+        d3.select(`#text-${d.data.id}`)
+          .classed('highlight', false);
 
-		return scale;
-	}
+        // remove slice highlighting
+        d3.select(`#slice-${d.data.id}`)
+          .classed('highlight', false);
+      });
 
-	function getGraphData (data){
-		// count categories for each like
-		var categories = {};
-		data.map(function(like) {
-			if (categories[like.category]) {
-				++categories[like.category];
-			} else {
-				categories[like.category] = 1;
-			}
-		});
+    polyline.transition().duration(1000)
+      .attrTween("points", function(d){
+        this._current = this._current || d;
+        var interpolate = d3.interpolate(this._current, d);
+        this._current = interpolate(0);
+        return function(t) {
+          var d2 = interpolate(t);
+          var pos = outerArc.centroid(d2);
+          pos[0] = getRadius() * 0.95 * (midAngle(d2) < Math.PI ? 1 : -1);
+          return [arc.centroid(d2), outerArc.centroid(d2), pos];
+        };      
+      });
+    
+    polyline.exit()
+      .remove();
+  }
 
-		var graphData = [];
-		angular.forEach(categories, function(count, key) {
-			var graphItem = {
-				id: graphData.length, // use array index as id
-				label: `${key} (${count})`,
-				value: count
-			};
-			graphData.push(graphItem);
-		});
+  function getWidth() {
+    var width = $('#facebook-likes-graph').width() - 40;
+    return width;
+  }
 
-		// sort by value, ascendent
-		graphData.sort( (a, b) => a.value - b.value);
+  function getHeight() {
+    var width = getWidth();
+    var height = width / 2;
+    return height;
+  }
 
-		// keep highest only
-		graphData = graphData.slice(-vm.limit);
+  function setContainerHeight(height) {
+    $('#facebook-likes-graph').height(height);
+  }
 
-		return graphData;
-	}
+  function getColor() {
+    var scale = d3.scale.ordinal()
+      .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+
+    return scale;
+  }
+
+  function getGraphData (data){
+    // count categories for each like
+    var categories = {};
+    data.map(function(like) {
+      if (categories[like.category]) {
+        ++categories[like.category];
+      } else {
+        categories[like.category] = 1;
+      }
+    });
+
+    var graphData = [];
+    angular.forEach(categories, function(count, key) {
+      var graphItem = {
+        id: graphData.length, // use array index as id
+        label: `${key} (${count})`,
+        value: count
+      };
+      graphData.push(graphItem);
+    });
+
+    // sort by value, ascendent
+    graphData.sort( (a, b) => a.value - b.value);
+
+    // keep highest only
+    graphData = graphData.slice(-vm.limit);
+
+    return graphData;
+  }
+}
+
+function createPng(id, callback) {
+  var doctype = 
+    '<?xml version="1.0" standalone="no"?>' +
+    '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">';
+
+  // serialize our SVG XML to a string
+  var svg = d3.select('#svg-' + id);
+  var source = (new XMLSerializer()).serializeToString(svg.node());
+
+  // create a file blob of our SVG
+  var blob = new Blob([ doctype + source], { type: 'image/svg+xml;charset=utf-8' });
+
+  // create url
+  var url = window.URL.createObjectURL(blob);
+
+  // put the svg into an image tag so that the Canvas element can read it in
+  var img = d3.select('body').append('img').node();
+
+  // get svg dimensions
+  var width = svg.style('width').replace('px', '');
+  var height = svg.style('height').replace('px', '');
+
+  img.onload = function(){
+    // now that the image has loaded, put the image into a canvas element
+    var canvas = d3.select('body').append('canvas').node();
+    canvas.width = width;
+    canvas.height = height;
+    canvas.style = 'display:none';
+    var ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+    var canvasUrl = canvas.toDataURL("image/png");
+    // var img2 = d3.select('body').append('img').node();
+
+    // this is now the base64 encoded version of our PNG! you could optionally
+    // redirect the user to download the PNG by sending them to the url with
+    // `window.location.href= canvasUrl`.
+    // img2.src = canvasUrl;
+
+    var binary = dataURItoBlob(canvasUrl);
+    callback(binary, canvasUrl);
+  }
+
+  // start loading the image
+  img.style = 'display:none';
+  img.src = url;
+}
+
+// Convert a data URI to blob
+function dataURItoBlob(dataURI) {
+  var byteString = atob(dataURI.split(',')[1]);
+  var ab = new ArrayBuffer(byteString.length);
+  var ia = new Uint8Array(ab);
+  for (var i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+  }
+  return new Blob([ab], {
+      type: 'image/png'
+  });
 }

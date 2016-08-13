@@ -13,4 +13,14 @@
 	<em>Last {{vm.likes.length}}</em>
 	<div id="facebook-likes-graph" class="facebook-likes-graph"></div>
 	<em>Top {{vm.limit}}</em>
+
+	<br>
+	<i 
+		class="glyphicon glyphicon-btn glyphicon-share"
+		ng-class="{'glyphicon-refresh spinning': vm.sharing}"
+		title="Show this to your friends!"
+		ng-click="vm.share()"
+		ng-disabled="vm.sharing"
+	>
+	</i>	
 </div>
