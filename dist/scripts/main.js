@@ -9,6 +9,7 @@ initAbout.$inject = ["routingProvider"];
 initContact.$inject = ["routingProvider"];
 facebookLoginController.$inject = ["$scope", "$element", "$attrs", "$facebook"];
 facebookLogoutController.$inject = ["$scope", "$element", "$attrs", "$facebook"];
+facebookMeController.$inject = ["$scope", "$element", "$attrs", "$facebook"];
 facebookFriendsController.$inject = ["$scope", "$element", "$attrs", "$interval", "$facebook"];
 facebookLikesController.$inject = ["$scope", "$element", "$attrs", "$facebook", "$http", "$uibModal"];
 facebookLikesShareController.$inject = ["$uibModal", "$facebook", "$http", "$uibModalInstance", "Notification", "params"];
@@ -489,6 +490,47 @@ function facebookLogoutController($scope, $element, $attrs, $facebook) {
 'use strict';
 
 angular.module('facebookMe', []);
+
+'use strict';
+
+angular.module('facebookMe').directive('facebookMe', facebookMe);
+
+//------------------------------------------------------------
+
+function facebookMe() {
+  var directive = {
+    link: link,
+    templateUrl: 'facebook-me/facebook-me.html',
+    restrict: 'A',
+    scope: {},
+    controller: facebookMeController,
+    controllerAs: 'vm'
+  };
+
+  return directive;
+
+  //------------------------------
+
+  function link(scope, el, attrs, vm) {}
+}
+
+function facebookMeController($scope, $element, $attrs, $facebook) {
+  'ngInject';
+
+  var vm = this;
+  vm.property = $attrs.facebookMe;
+  vm.me = {};
+
+  var fieldsArray = ['id', 'name', 'first_name', 'gender', 'cover', 'email', 'languages', 'link', 'quotes', 'sports'];
+  var fields = fieldsArray.join(',');
+
+  $facebook.cachedApi('me?fields=' + fields).then(setMe);
+
+  function setMe(response) {
+    console.log('ME:', response);
+    vm.me = response;
+  }
+}
 
 'use strict';
 
@@ -1070,7 +1112,7 @@ angular.module('app').run(['$templateCache', function ($templateCache) {
   $templateCache.put('contact/contact.html', '<app-header></app-header>\n\n<div class="jumbotron">\n  <h1>Contact</h1>\n  <p class="lead">Please, let me know about your experience using <b>Insight</b> :)</p>\n</div>\n\n<div class="row marketing">\n  <div class="col-lg-6">\n\n    <form name="contactForm">\n      <div class="form-group">\n        <h4>It\'s always nice to meet you!</h4>\n        <p>Did you enjoy using Insight?</p>\n        <p>What other insights would you like to get?</p>\n        <p>How would you make Insight better?</p>\n        <p>Did you find a bug?</p>\n        <p>If you just want to share the love that\'s also cool!</p>\n        <a class="btn btn-primary" href="mailto:b3rt.js@gmail.com" target="_blank">Write me an email</a>\n      </div>\n\n      <!-- <div class="form-group">\n        <h4>Here you can write anything you want to share</h4>\n        <textarea\n          class="form-control"\n          rows="10"\n          placeholder="Do you like Facebook Insight? Is it easy to use? How would you make it better?"\n        ></textarea>\n      </div>\n\n      <button class="btn btn-primary">Send</button> -->\n    </form>\n  </div>\n</div>\n\n<app-footer></app-footer>\n');
   $templateCache.put('dashboard/dashboard.html', '<app-header></app-header>\n\n<div class="jumbotron">\n  <h1>Dashboard</h1>\n  <p class="lead">Your one stop place for Facebook insight ;)</p>\n</div>\n\n<div class="row marketing">\n  <div class="col-lg-12">\n  \t<h2 class="animated bounceInLeft">\n  \t\tHi <span facebook-me="first_name"></span>!\n\t\t</h2>\n\t\t<h4>Let\'s review your Facebook world and find some cool stuff ;)</h4>\n\n\t\t<!-- dashboard data visualizations go here -->\n    <div class="dashboard-container">\n    \t<facebook-friends></facebook-friends>\n    \t<facebook-likes></facebook-likes>\n    </div>\n  </div>\n</div>\n\n<app-footer></app-footer>\n');
   $templateCache.put('facebook-friends/facebook-friends.html', '<div class="facebook-insight facebook-friends jumbotron inline-block">\n\t<h4>Total Friends</h4>\n\t<h1>{{vm.total}}</h1>\n</div>');
-  $templateCache.put('facebook-likes/facebook-likes-share.modal.html', '<div class="row-fluid">\n\t<div class="col-md-12">\n\t\t<h1>Share with your friends</h1>\n\t\t<h4>It was cool to discover which categories you like the most right?</h4>\n\t\t<h4>Your friends will be surprised too!</h4>\n\n\t\t<p>Is there anything you want to say?</p>\n\t\t<textarea \n\t\t\tclass="form-control"\n\t\t\trows="5"\n\t\t\tng-model="vm.message"\n\t\t\tplaceholder="This message will be shown along with the image below."\n\t\t></textarea>\n\n\t\t<img class="full-width" ng-src="{{vm.urlData}}"></img>\n\n\t\t<div class="form-group text-right">\n\t\t\t<button\n\t\t\t\ttype="button"\n\t\t\t\tclass="btn btn-default"\n\t\t\t\tng-click="$close()"\n\t\t\t>\n\t\t\t\tCancel\n\t\t\t</button>\n\n\t\t\t<button \n\t\t\t\ttype="button"\n\t\t\t\tclass="btn btn-primary"\n\t\t\t\tng-class="{\'disabled\': vm.sharing}"\n\t\t\t\tng-click="vm.share()"\n\t\t\t\tng-disabled="vm.sharing"\n\t\t\t>\n\t\t\t\t<span ng-if="!vm.sharing">Share!</span>\n\t\t\t\t<span ng-if="vm.sharing">Sharing...</span>\n\t\t\t</button>\n\t\t</div>\n\t</div>\n</div>\n');
+  $templateCache.put('facebook-likes/facebook-likes-share.modal.html', '<div class="row padding-left-one padding-right-one">\n\t<div class="col-md-12">\n\t\t<h1>Share with your friends</h1>\n\t\t<h4>It was cool to discover which categories you like the most right?</h4>\n\t\t<h4>Your friends will be surprised too!</h4>\n\n\t\t<p>Is there anything you want to say?</p>\n\t\t<textarea \n\t\t\tclass="form-control"\n\t\t\trows="5"\n\t\t\tng-model="vm.message"\n\t\t\tplaceholder="This message will be shown along with the image below."\n\t\t></textarea>\n\n\t\t<img class="full-width" ng-src="{{vm.urlData}}"></img>\n\n\t\t<div class="form-group text-right">\n\t\t\t<button\n\t\t\t\ttype="button"\n\t\t\t\tclass="btn btn-default"\n\t\t\t\tng-click="$close()"\n\t\t\t>\n\t\t\t\tCancel\n\t\t\t</button>\n\n\t\t\t<button \n\t\t\t\ttype="button"\n\t\t\t\tclass="btn btn-primary"\n\t\t\t\tng-class="{\'disabled\': vm.sharing}"\n\t\t\t\tng-click="vm.share()"\n\t\t\t\tng-disabled="vm.sharing"\n\t\t\t>\n\t\t\t\t<span ng-if="!vm.sharing">Share!</span>\n\t\t\t\t<span ng-if="vm.sharing">Sharing...</span>\n\t\t\t</button>\n\t\t</div>\n\t</div>\n</div>\n');
   $templateCache.put('facebook-likes/facebook-likes.html', '<div class="facebook-insight facebook-likes jumbotron align-bottom">\n\t<h4>\n\t\tYour Likes By Category\n\t\t<i \n\t\t\tclass="glyphicon glyphicon-btn glyphicon-plus"\n\t\t\tng-class="{\'disabled\': !vm.next}"\n\t\t\ttitle="Load more likes"\n\t\t\tng-click="vm.getMore()"\n\t\t\tng-disabled="!vm.next"\n\t\t>\n\t\t</i>\n\t</h4>\n\t<em>Last {{vm.likes.length}}</em>\n\t<div id="facebook-likes-graph" class="facebook-likes-graph"></div>\n\t<em>Top {{vm.limit}}</em>\n\n\t<br>\n\t<i \n\t\tclass="glyphicon glyphicon-btn glyphicon-share"\n\t\tng-class="{\'glyphicon-refresh spinning\': vm.sharing}"\n\t\ttitle="Show this to your friends!"\n\t\tng-click="vm.share()"\n\t\tng-disabled="vm.sharing"\n\t>\n\t</i>\t\n</div>');
   $templateCache.put('facebook-me/facebook-me.html', '<span class="facebook-me">{{vm.me[vm.property] ||\xA0\'\'}}</span>');
   $templateCache.put('footer/footer.html', '<div class="footer">\n  <p>♥ from Buenos Aires</p>\n  <div\n    class="fb-like"\n    data-share="true"\n    data-width="450"\n    data-show-faces="true">\n  </div>\n</div>\n');
