@@ -2,16 +2,18 @@
 
 angular
   .module('welcome')
-  .run(init);
+  .run(initWelcome);
 
 //------------------------------------------------------------
 
-function init(routingProvider, $rootScope, $state, $facebook) {
+function initWelcome(routingProvider, $rootScope, $state, $facebook) {
+  'ngInject';
+  
   var states = [
     {
       name: 'welcome',
       url: '/welcome',
-      templateUrl: '/welcome/welcome.html'
+      templateUrl: 'welcome/welcome.html'
     }
   ];
 

@@ -23,7 +23,7 @@ function facebookMe() {
   //------------------------------
 
   function link(scope, el, attrs, vm) {
-
+    'ngInject';
   }
 }
 

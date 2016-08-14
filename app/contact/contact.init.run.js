@@ -2,16 +2,18 @@
 
 angular
   .module('contact')
-  .run(init);
+  .run(initContact);
 
 //------------------------------------------------------------
 
-function init(routingProvider) {
+function initContact(routingProvider) {
+  'ngInject';
+  
   var states = [
     {
       name: 'contact',
       url: '/contact',
-      templateUrl: '/contact/contact.html'
+      templateUrl: 'contact/contact.html'
     }
   ];
 

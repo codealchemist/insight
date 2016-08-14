@@ -20,7 +20,7 @@ function facebookLogin() {
   //------------------------------
 
   function link(scope, el, attrs, vm) {
-
+    'ngInject';
   }
 }
 

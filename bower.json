@@ -11,7 +11,8 @@
     "css-helpers": "css-helpers-lib#*",
     "angular-bootstrap": "^2.0.1",
     "angular-animate": "^1.5.8",
-    "angular-touch": "^1.5.8"
+    "angular-touch": "^1.5.8",
+    "angular-ui-notification": "^0.2.0"
   },
   "overrides": {
     "bootstrap-sass": {

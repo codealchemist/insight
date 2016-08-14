@@ -2,11 +2,11 @@
 
 angular
     .module('core')
-    .run(init);
+    .run(initCore);
 
 //------------------------------------------------------------
 
-function init($rootScope, config) {
+function initCore($rootScope, config) {
   'ngInject';
 
   // Load the facebook SDK asynchronously
@@ -16,7 +16,7 @@ function init($rootScope, config) {
        var js, fjs = d.getElementsByTagName(s)[0];
        if (d.getElementById(id)) {return;}
        js = d.createElement(s); js.id = id;
-       js.src = "//connect.facebook.net/en_US/sdk.js";
+       js.src = '//connect.facebook.net/en_US/sdk.js';
        fjs.parentNode.insertBefore(js, fjs);
      }(document, 'script', 'facebook-jssdk'));
   }());

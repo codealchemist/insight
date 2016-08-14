@@ -2,16 +2,18 @@
 
 angular
   .module('about')
-  .run(init);
+  .run(initAbout);
 
 //------------------------------------------------------------
 
-function init(routingProvider) {
+function initAbout(routingProvider) {
+  'ngInject';
+
   var states = [
     {
       name: 'about',
       url: '/about',
-      templateUrl: '/about/about.html'
+      templateUrl: 'about/about.html'
     }
   ];
 

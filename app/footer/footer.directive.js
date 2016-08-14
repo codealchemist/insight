@@ -21,6 +21,6 @@ function appFooter() {
   //------------------------------
 
   function link(scope, el, attrs) {
-
+    'ngInject';
   }
 }

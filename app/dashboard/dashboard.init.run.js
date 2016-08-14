@@ -2,16 +2,18 @@
 
 angular
   .module('dashboard')
-  .run(init);
+  .run(initDashboard);
 
 //------------------------------------------------------------
 
-function init(routingProvider, $rootScope, $state, $facebook) {
+function initDashboard(routingProvider, $rootScope, $state, $facebook) {
+  'ngInject';
+  
   var states = [
     {
       name: 'dashboard',
       url: '/dashboard',
-      templateUrl: '/dashboard/dashboard.html',
+      templateUrl: 'dashboard/dashboard.html',
       onEnter: onEnter
     }
   ];

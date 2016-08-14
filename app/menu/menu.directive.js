@@ -23,11 +23,13 @@ function fiMenu() {
   //------------------------------
 
   function link(scope, el, attrs, vm) {
-
+    'ngInject';
   }
 }
 
 function fiMenuController($scope, $element, $attrs, $state, $facebook) {
+  'ngInject';
+  
   var vm = this;
   vm.currentStateName = $state.current.name;
   vm.isLoggedInToFacebook = false;

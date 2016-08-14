@@ -21,6 +21,6 @@ function appHeader() {
   //------------------------------
 
   function link(scope, el, attrs) {
-
+    'ngInject';
   }
 }

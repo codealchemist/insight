@@ -6,5 +6,6 @@ angular
     'ngAnimate',
     'ngTouch',
     'ui.bootstrap',
+    'ui-notification',
     'ngFacebook'
   ]);

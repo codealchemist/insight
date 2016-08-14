@@ -4,7 +4,7 @@ angular
   .module('facebookLikes')
   .controller('facebookLikesShareController', facebookLikesShareController);
 
-function facebookLikesShareController($uibModal, $facebook, $http, $uibModalInstance, params) {
+function facebookLikesShareController($uibModal, $facebook, $http, $uibModalInstance, Notification, params) {
   'ngInject';
 
   var vm = this;
@@ -34,6 +34,7 @@ function facebookLikesShareController($uibModal, $facebook, $http, $uibModalInst
     function onShared() {
       vm.sharing = false;
       $uibModalInstance.close();
+      Notification.success('Your likes insight was successfully shared :)');
     }
   }
 }

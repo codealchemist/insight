@@ -23,7 +23,7 @@ function facebookLikes() {
   //------------------------------
 
   function link(scope, el, attrs, vm) {
-
+    'ngInject';
   }
 }
 
@@ -120,10 +120,10 @@ function facebookLikesController($scope, $element, $attrs, $facebook, $http, $ui
 
   function createSvg(id) {
     var svg = d3.select('#' + id)
-      .append("svg")
+      .append('svg')
       .attr('id', 'svg-' + id)
       .attr('style', 'font-family: "Helvetica Neue", Helvetica, Arial, sans-serif')
-      .append("g");
+      .append('g');
 
     return svg;
   }
@@ -145,18 +145,18 @@ function facebookLikesController($scope, $element, $attrs, $facebook, $http, $ui
   }
 
   function graph(svg, data) {
-    svg.append("g")
-      .attr("class", "slices");
-    svg.append("g")
-      .attr("class", "labels");
-    svg.append("g")
-      .attr("class", "lines");
+    svg.append('g')
+      .attr('class', 'slices');
+    svg.append('g')
+      .attr('class', 'labels');
+    svg.append('g')
+      .attr('class', 'lines');
 
     var width = getWidth();
     var height = getHeight();
     setContainerHeight(height);
 
-    svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+    svg.attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
 
     function getRadius(percentage) {
       percentage = percentage || 1;
@@ -200,15 +200,15 @@ function facebookLikesController($scope, $element, $attrs, $facebook, $http, $ui
   };
 
   function setSlices({svg, data, pie, color, arc, key}) {
-    var slice = svg.select(".slices")
-      .selectAll("path.slice")
+    var slice = svg.select('.slices')
+      .selectAll('path.slice')
       .data(pie(data), key);
 
     slice.enter()
-      .insert("path")
-      .style("fill", function(d) { return color(d.data.label); })
-      .attr("class", "slice")
-      .attr("id", (d) => `slice-${d.data.id}`)
+      .insert('path')
+      .style('fill', function(d) { return color(d.data.label); })
+      .attr('class', 'slice')
+      .attr('id', (d) => `slice-${d.data.id}`)
       .on('mouseover', function(d){
         // highlight slice
         d3.select(this)
@@ -238,7 +238,7 @@ function facebookLikesController($scope, $element, $attrs, $facebook, $http, $ui
 
     slice   
       .transition().duration(1000)
-      .attrTween("d", function(d) {
+      .attrTween('d', function(d) {
         this._current = this._current || d;
         var interpolate = d3.interpolate(this._current, d);
         this._current = interpolate(0);
@@ -253,17 +253,17 @@ function facebookLikesController($scope, $element, $attrs, $facebook, $http, $ui
   }
 
   function setLabels({svg, data, pie, outerArc, getRadius, midAngle, key}) {
-    var text = svg.select(".labels")
-      .selectAll("text")
+    var text = svg.select('.labels')
+      .selectAll('text')
       .data(pie(data), key);
 
     text.enter()
-      .append("text")
-      .attr("dy", ".35em")
+      .append('text')
+      .attr('dy', '.35em')
       .text(function(d) {
         return d.data.label;
       })
-      .attr("id", (d) => `text-${d.data.id}`)
+      .attr('id', (d) => `text-${d.data.id}`)
       .on('mouseover', function(d){
         // highlight text
         d3.select(this)
@@ -292,7 +292,7 @@ function facebookLikesController($scope, $element, $attrs, $facebook, $http, $ui
       });
 
     text.transition().duration(1000)
-      .attrTween("transform", function(d) {
+      .attrTween('transform', function(d) {
         this._current = this._current || d;
         var interpolate = d3.interpolate(this._current, d);
         this._current = interpolate(0);
@@ -300,16 +300,16 @@ function facebookLikesController($scope, $element, $attrs, $facebook, $http, $ui
           var d2 = interpolate(t);
           var pos = outerArc.centroid(d2);
           pos[0] = getRadius() * (midAngle(d2) < Math.PI ? 1 : -1);
-          return "translate("+ pos +")";
+          return 'translate('+ pos +')';
         };
       })
-      .styleTween("text-anchor", function(d){
+      .styleTween('text-anchor', function(d){
         this._current = this._current || d;
         var interpolate = d3.interpolate(this._current, d);
         this._current = interpolate(0);
         return function(t) {
           var d2 = interpolate(t);
-          return midAngle(d2) < Math.PI ? "start":"end";
+          return midAngle(d2) < Math.PI ? 'start':'end';
         };
       });
 
@@ -319,13 +319,13 @@ function facebookLikesController($scope, $element, $attrs, $facebook, $http, $ui
   }
 
   function setLines({svg, data, pie, arc, outerArc, getRadius, midAngle, key}) {
-    var polyline = svg.select(".lines")
-      .selectAll("polyline")
+    var polyline = svg.select('.lines')
+      .selectAll('polyline')
       .data(pie(data), key);
     
     polyline.enter()
-      .append("polyline")
-      .attr("id", (d) => `line-${d.data.id}`)
+      .append('polyline')
+      .attr('id', (d) => `line-${d.data.id}`)
       .attr('style', 'opacity: .3; stroke: black; stroke-width: 2px; fill: none;')
       .on('mouseover', function(d){
         // highlight line
@@ -355,7 +355,7 @@ function facebookLikesController($scope, $element, $attrs, $facebook, $http, $ui
       });
 
     polyline.transition().duration(1000)
-      .attrTween("points", function(d){
+      .attrTween('points', function(d){
         this._current = this._current || d;
         var interpolate = d3.interpolate(this._current, d);
         this._current = interpolate(0);
@@ -388,7 +388,7 @@ function facebookLikesController($scope, $element, $attrs, $facebook, $http, $ui
 
   function getColor() {
     var scale = d3.scale.ordinal()
-      .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+      .range(['#98abc5', '#8a89a6', '#7b6888', '#6b486b', '#a05d56', '#d0743c', '#ff8c00']);
 
     return scale;
   }
@@ -454,7 +454,7 @@ function createPng(id, callback) {
     canvas.style = 'display:none';
     var ctx = canvas.getContext('2d');
     ctx.drawImage(img, 0, 0);
-    var canvasUrl = canvas.toDataURL("image/png");
+    var canvasUrl = canvas.toDataURL('image/png');
     // var img2 = d3.select('body').append('img').node();
 
     // this is now the base64 encoded version of our PNG! you could optionally

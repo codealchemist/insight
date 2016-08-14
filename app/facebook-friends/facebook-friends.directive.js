@@ -23,7 +23,7 @@ function facebookFriends() {
   //------------------------------
 
   function link(scope, el, attrs, vm) {
-
+    'ngInject';
   }
 }
 
@@ -36,7 +36,7 @@ function facebookFriendsController($scope, $element, $attrs, $interval, $faceboo
   vm.total = 0;
 
   $facebook
-  	.cachedApi(`me?fields=friends`)
+  	.cachedApi('me?fields=friends')
   	.then( setFriends );
 
 	function setFriends(response) {
