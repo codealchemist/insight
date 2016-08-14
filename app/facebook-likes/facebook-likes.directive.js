@@ -440,7 +440,10 @@ function createPng(id, callback) {
   var url = window.URL.createObjectURL(blob);
 
   // put the svg into an image tag so that the Canvas element can read it in
-  var img = d3.select('body').append('img').node();
+  var img = d3.select('body')
+    .append('img')
+    .attr('style', 'display:none')
+    .node();
 
   // get svg dimensions
   var width = svg.style('width').replace('px', '');
@@ -448,10 +451,13 @@ function createPng(id, callback) {
 
   img.onload = function(){
     // now that the image has loaded, put the image into a canvas element
-    var canvas = d3.select('body').append('canvas').node();
+    var canvas = d3.select('body')
+      .append('canvas')
+      .attr('style', 'display:none')
+      .node();
+
     canvas.width = width;
     canvas.height = height;
-    canvas.style = 'display:none';
     var ctx = canvas.getContext('2d');
     ctx.drawImage(img, 0, 0);
     var canvasUrl = canvas.toDataURL('image/png');
@@ -467,7 +473,6 @@ function createPng(id, callback) {
   }
 
   // start loading the image
-  img.style = 'display:none';
   img.src = url;
 }
 
