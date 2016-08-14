@@ -23,9 +23,9 @@ function configProvider() {
       },
       {
         name: 'staging',
-        domains: ['TODO'],
+        domains: ['appinsight.herokuapp.com'],
         config: {
-          facebookAppId: 'TODO'
+          facebookAppId: '1624901197822863'
         }
       }
     ];
@@ -39,6 +39,8 @@ function configProvider() {
         return true;
       }
     });
+
+    if (!currentConfig) throw new Error('[ CONFIG-PROVIDER ]--> HOSTNAME NOT FOUND: ' + hostname);
 
     return currentConfig;
   }
