@@ -53,7 +53,6 @@ function facebookMeController($scope, $element, $attrs, $facebook) {
   	.then( setMe );
 
 	function setMe(response) {
-		console.log('ME:', response);
 		vm.me = response;
 	}
 }

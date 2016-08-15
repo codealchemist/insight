@@ -441,6 +441,7 @@ function createPng(id, callback) {
   var canvas = d3.select('body')
     .append('canvas')
     .attr('id', 'canvas-' + id)
+    .attr('style', 'display:none')
     .node();
   canvas.width = width;
   canvas.height = height;
@@ -458,6 +459,7 @@ function createPng(id, callback) {
       var canvasdata = canvas.toDataURL('image/png');
       var binary = dataURItoBlob(canvasdata);
       tempImg.remove();
+      canvas.remove();
 
       callback(binary, canvasdata);
     });
