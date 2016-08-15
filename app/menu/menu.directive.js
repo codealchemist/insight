@@ -34,10 +34,11 @@ function fiMenuController($scope, $element, $attrs, $state, $facebook) {
   vm.currentStateName = $state.current.name;
   vm.isLoggedInToFacebook = false;
 
+  // set logged in flag
   $facebook
     .getLoginStatus()
     .then(function(response) {
-      if (response.status !== 'unknown') vm.isLoggedInToFacebook = true;
+      if (response.status === 'connected') vm.isLoggedInToFacebook = true;
     });
 
   $scope.$on('fb.auth.logout', () => vm.isLoggedInToFacebook = false);

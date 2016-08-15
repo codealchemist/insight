@@ -35,7 +35,7 @@ function facebookLoginController($scope, $element, $attrs, $facebook) {
     .getLoginStatus()
     .finally()
     .then(function(response) {
-      if (response.status === 'unknown') show();
+      if (response.status !== 'connected') show();
     });
 
   // show on logout

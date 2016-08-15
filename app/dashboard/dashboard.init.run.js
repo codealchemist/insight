@@ -39,7 +39,7 @@ function initDashboard(routingProvider, $rootScope, $state, $facebook) {
       .then(onFacebookResponse);
 
     function onFacebookResponse(response) {
-      if (!response.status || response.status === 'unknown') {
+      if (!response.status || response.status !== 'connected') {
         $state.go('welcome');
       }
     }
