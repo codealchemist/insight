@@ -436,80 +436,32 @@ function createPng(id, callback) {
     .attr('xmlns', 'http://www.w3.org/2000/svg')
     .node().parentNode.innerHTML;
 
-  //console.log(html);
   var imgsrc = 'data:image/svg+xml;base64,'+ btoa(html);
-  // var img = '<img src="'+imgsrc+'">'; 
-  // d3.select("#svgdataurl").html(img);
   
-  var canvas = d3.select('body').append('canvas').node();
+  var canvas = d3.select('body')
+    .append('canvas')
+    .attr('id', 'canvas-' + id)
+    .node();
   canvas.width = width;
   canvas.height = height;
   var context = canvas.getContext('2d');
 
   var image = new Image;
+  image.width = width;
+  image.height = height;
   image.src = imgsrc;
+  var tempImg = document.body.appendChild(image); // img needs to render on page for it to work on Safari
+  
   image.onload = function() {
-    context.drawImage(image, 0, 0);
-    var canvasdata = canvas.toDataURL('image/png');
-    var binary = dataURItoBlob(canvasdata);
+    setTimeout(() => { // timeout is needed in Safari to allow the image to render on the page
+      context.drawImage(image, 0, 0);
+      var canvasdata = canvas.toDataURL('image/png');
+      var binary = dataURItoBlob(canvasdata);
+      tempImg.remove();
 
-    callback(binary, canvasdata);
+      callback(binary, canvasdata);
+    });
   };
-  return;
-
-
-
-
-
-  var doctype = 
-    '<?xml version="1.0" standalone="no"?>' +
-    '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">';
-
-  // serialize our SVG XML to a string
-  var svg = d3.select('#svg-' + id);
-  var source = (new XMLSerializer()).serializeToString(svg.node());
-
-  // create a file blob of our SVG
-  var blob = new Blob([ doctype + source], { type: 'image/svg+xml;charset=utf-8' });
-
-  // create url
-  var url = window.URL.createObjectURL(blob);
-
-  // put the svg into an image tag so that the Canvas element can read it in
-  var img = d3.select('body')
-    .append('img')
-    .attr('style', 'display:none')
-    .node();
-
-  // get svg dimensions
-  var width = svg.style('width').replace('px', '');
-  var height = svg.style('height').replace('px', '');
-
-  img.onload = function(){
-    // now that the image has loaded, put the image into a canvas element
-    var canvas = d3.select('body')
-      .append('canvas')
-      // .attr('style', 'display:none')
-      .node();
-
-    canvas.width = width;
-    canvas.height = height;
-    var ctx = canvas.getContext('2d');
-    ctx.drawImage(img, 0, 0);
-    var canvasUrl = canvas.toDataURL('image/png');
-    // var img2 = d3.select('body').append('img').node();
-
-    // this is now the base64 encoded version of our PNG! you could optionally
-    // redirect the user to download the PNG by sending them to the url with
-    // `window.location.href= canvasUrl`.
-    // img2.src = canvasUrl;
-
-    var binary = dataURItoBlob(canvasUrl);
-    callback(binary, canvasUrl);
-  }
-
-  // start loading the image
-  img.src = url;
 }
 
 // Convert a data URI to blob
