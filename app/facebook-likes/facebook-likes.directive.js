@@ -193,6 +193,7 @@ function facebookLikesController($scope, $element, $attrs, $facebook, $http, $ui
     }
 
     // compose graph
+    // NOTE: object shorthand breaks uglify; must transpile before piping to it
     var components = {svg, data, pie, color, arc, outerArc, getRadius, midAngle, key};
     setSlices(components);
     setLabels(components);
@@ -425,6 +426,41 @@ function facebookLikesController($scope, $element, $attrs, $facebook, $http, $ui
 }
 
 function createPng(id, callback) {
+  // get svg dimensions
+  var svg = d3.select('#svg-' + id);
+  var width = svg.style('width').replace('px', '');
+  var height = svg.style('height').replace('px', '');
+
+  var html = svg
+    .attr('version', 1.1)
+    .attr('xmlns', 'http://www.w3.org/2000/svg')
+    .node().parentNode.innerHTML;
+
+  //console.log(html);
+  var imgsrc = 'data:image/svg+xml;base64,'+ btoa(html);
+  // var img = '<img src="'+imgsrc+'">'; 
+  // d3.select("#svgdataurl").html(img);
+  
+  var canvas = d3.select('body').append('canvas').node();
+  canvas.width = width;
+  canvas.height = height;
+  var context = canvas.getContext('2d');
+
+  var image = new Image;
+  image.src = imgsrc;
+  image.onload = function() {
+    context.drawImage(image, 0, 0);
+    var canvasdata = canvas.toDataURL('image/png');
+    var binary = dataURItoBlob(canvasdata);
+
+    callback(binary, canvasdata);
+  };
+  return;
+
+
+
+
+
   var doctype = 
     '<?xml version="1.0" standalone="no"?>' +
     '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">';
@@ -453,7 +489,7 @@ function createPng(id, callback) {
     // now that the image has loaded, put the image into a canvas element
     var canvas = d3.select('body')
       .append('canvas')
-      .attr('style', 'display:none')
+      // .attr('style', 'display:none')
       .node();
 
     canvas.width = width;
