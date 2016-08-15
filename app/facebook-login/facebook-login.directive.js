@@ -33,6 +33,7 @@ function facebookLoginController($scope, $element, $attrs, $facebook) {
   // show if not logged in
   $facebook
     .getLoginStatus()
+    .finally()
     .then(function(response) {
       if (response.status === 'unknown') show();
     });
