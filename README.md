@@ -22,7 +22,3 @@ It will show some totals and nice graphics related to your Facebook account stat
 
 Because it will let you learn more about how you use Facebook, with which people or groups you share the most, when and where you usually share, etc.
 And the best thing is you'll see all this by taking just a quick look at some really nice graphics.
-
-### Are your kids on Facebook?
-
-Then Insight will be extra useful for you. It will let you know how your kid socialize at a glance.
