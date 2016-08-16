@@ -16,6 +16,7 @@ function facebookLikesShareController($uibModal, $facebook, $http, $uibModalInst
 
   function share() {
     vm.sharing = true;
+    params.sharingStart();
 
     var fd = new FormData();
     var accessToken = $facebook.getAuthResponse().accessToken;
@@ -35,6 +36,7 @@ function facebookLikesShareController($uibModal, $facebook, $http, $uibModalInst
       vm.sharing = false;
       $uibModalInstance.close();
       Notification.success('Your likes insight was successfully shared :)');
+      params.sharingDone();
     }
   }
 }

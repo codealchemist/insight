@@ -16,10 +16,10 @@
 
 	<br>
 	<i 
-		class="glyphicon glyphicon-btn glyphicon-share"
-		ng-class="{'glyphicon-refresh spinning': vm.sharing}"
+		class="glyphicon glyphicon-btn"
+		ng-class="{'glyphicon-refresh spinning disabled': vm.sharing, 'glyphicon-share': !vm.sharing}"
 		title="Show this to your friends!"
-		ng-click="vm.share()"
+		ng-click="!vm.sharing && vm.share()"
 		ng-disabled="vm.sharing"
 	>
 	</i>	

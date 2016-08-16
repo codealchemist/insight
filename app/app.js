@@ -10,6 +10,7 @@ angular
     'welcome',
     'about',
     'contact',
+    'graph',
     'facebookLogin',
     'facebookLogout',
     'facebookMe',

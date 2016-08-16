@@ -88,7 +88,7 @@ gulp.task('mintest', () => {
     .pipe(gulp.dest('.tmp/mintest'));
 });
 
-gulp.task('angular-templates', function () {
+gulp.task('angular-templates', () => {
   return gulp.src(['app/**/*.html', '!app/index.html'])
     .pipe($.angularTemplatecache({module: 'app'}))
     .pipe(gulp.dest('app'));
@@ -124,7 +124,7 @@ gulp.task('extras', () => {
 
 gulp.task('clean', del.bind(null, ['.tmp', 'dist']));
 
-gulp.task('serve', ['wiredep', 'styles', 'scripts', 'fonts'], () => {
+gulp.task('serve', ['wiredep', 'styles', 'angular-templates', 'scripts', 'fonts'], () => {
   browserSync({
     browser: 'google chrome',
     notify: false,
@@ -194,7 +194,7 @@ gulp.task('wiredep', () => {
     .pipe(gulp.dest('app/'));
 });
 
-gulp.task('build', ['lint', 'html', 'images', 'fonts'], () => {
+gulp.task('build', ['clean', 'lint', 'html', 'images', 'fonts'], () => {
   return gulp.src('dist/**/*').pipe($.size({title: 'build', gzip: true}));
 });
 
