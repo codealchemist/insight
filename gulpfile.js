@@ -71,10 +71,9 @@ gulp.task('html', ['styles', 'angular-templates'], () => {
     .pipe($.size({showFiles: true}))
     .pipe($.if('scripts/*.js', $.babel({presets: ['es2015']}))) // need to transpile to avoid erros with object shorthand on uglify
     .pipe($.if('scripts/*.js', $.ngAnnotate()))
-    // .pipe($.if('*.js', $.uglify()))
+    .pipe($.if('*.js', $.uglify()))
     .pipe($.if('*.css', $.cssnano({safe: true, autoprefixer: false})))
     .pipe($.if('*.html', $.htmlmin({collapseWhitespace: true})))
-    // .pipe($.if('*.html', $.angularTemplatecache({module: 'app'})))
     .pipe($.size({showFiles: true}))
     .pipe(gulp.dest('dist'));
 });
@@ -122,7 +121,7 @@ gulp.task('extras', () => {
   }).pipe(gulp.dest('dist'));
 });
 
-gulp.task('clean', del.bind(null, ['.tmp', 'dist']));
+gulp.task('clean', del.sync(['.tmp', 'dist']));
 
 gulp.task('serve', ['wiredep', 'styles', 'angular-templates', 'scripts', 'fonts'], () => {
   browserSync({
