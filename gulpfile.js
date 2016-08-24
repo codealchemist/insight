@@ -123,7 +123,7 @@ gulp.task('extras', () => {
 
 gulp.task('clean', del.sync(['.tmp', 'dist']));
 
-gulp.task('serve', ['wiredep', 'styles', 'angular-templates', 'scripts', 'fonts'], () => {
+gulp.task('serve', ['clean', 'wiredep', 'styles', 'angular-templates', 'scripts', 'fonts'], () => {
   browserSync({
     browser: 'google chrome',
     notify: false,

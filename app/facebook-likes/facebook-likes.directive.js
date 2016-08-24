@@ -6,13 +6,16 @@ angular
 
 //------------------------------------------------------------
 
-function facebookLikes() {
+function facebookLikes($timeout) {
+  'ngInject';
+
   var directive = {
     link: link,
     templateUrl: 'facebook-likes/facebook-likes.html',
     restrict: 'E',
     scope: {
-      
+      'module': '@',
+      'id': '@'
     },
     controller: facebookLikesController,
     controllerAs: 'vm'
@@ -27,19 +30,21 @@ function facebookLikes() {
   }
 }
 
-function facebookLikesController($scope, $element, $attrs, $facebook, $http, $uibModal, graph) {
+function facebookLikesController($scope, $element, $attrs, $facebook, $http, $uibModal, graph, facebookLikesByCategory, facebookLikesByPopularity) {
   'ngInject';
 
+  var activeModuleName = $scope.module;
+  var el = $element.find('.facebook-likes-graph')[0];
   var vm = this;
-  vm.property = $attrs.facebookLikes;
+  vm.init = init;
   vm.limit = 10; // top N categories
   vm.likes = {};
   vm.next;
-  vm.getMore = getMore;
+  vm.getMore;
   vm.share;
+  vm.graphId = 'facebook-likes-' + $scope.id;
 
-  var graphId = 'facebook-likes-graph';
-  var svg = graph.createSvg(graphId);
+  var svg;
   var fieldsArray = [
     'created_time',
     'written_by',
@@ -51,23 +56,51 @@ function facebookLikesController($scope, $element, $attrs, $facebook, $http, $ui
   ];
   var fields = fieldsArray.join(',');
 
-  $facebook
-    .cachedApi(`me?fields=likes{${fields}}`)
-    .then(setLikes)
-    .then(setNext)
-    .then( (response) => graph.donut(svg, getGraphData(vm.likes)))
-    .then( (response) => setEvents(svg, getGraphData(vm.likes)))
-    .then(setSharingMethod);
+  // set available facebook-like modules
+  var modules = {
+    byCategory: facebookLikesByCategory,
+    byPopularity: facebookLikesByPopularity
+  };
+
+  // set active module
+  var activeModule = modules[activeModuleName];
+  vm.module = activeModule;
+  angular.merge(vm, activeModule.vm);
+
+  // initialize
+  init();
+
+  function init() {
+    svg = graph.createSvg(el);
+
+    // bind getMore to active module
+    // refresh likes when active module gets more data
+    vm.getMore = () => {
+      activeModule.vm.getMore(svg)
+        .then( () => vm.likes = activeModule.vm.likes );
+    };
+
+    // query facebook and handle response
+    $facebook
+      .cachedApi(`me?fields=likes{${fields}}`)
+      .then(setLikes)
+      .then(setNext)
+      .then( (response) => activeModule.draw(svg, activeModule.getGraphData(activeModule.vm.likes)) )
+      .then( (response) => setEvents(svg, activeModule.getGraphData(activeModule.vm.likes)) )
+      .then(setSharingMethod);
+  }
 
   //------------------------------
 
   function setLikes(response) {
-    vm.likes = response.likes.data;
+    activeModule.vm.likes = response.likes.data;
+    vm.likes = activeModule.vm.likes;
     return response;
   }
 
   function setNext(response) {
-    vm.next = response.likes.paging.next;
+    activeModule.vm.next = response.likes.paging.next;
+    vm.next = activeModule.vm.next;
     return response;
   }
 
@@ -75,7 +108,8 @@ function facebookLikesController($scope, $element, $attrs, $facebook, $http, $ui
     vm.share = share;
 
     function share() {
-      graph.createPng(graphId, onCreatePngOk);
+      var svg = $(el).find('svg')[0];
+      graph.createPng(svg, onCreatePngOk);
 
       function onCreatePngOk(binaryData, urlData) {
         // window.open(urlData, 'Insight Image');
@@ -99,22 +133,6 @@ function facebookLikesController($scope, $element, $attrs, $facebook, $http, $ui
     }
   }
 
-  function getMore() {
-    if (vm.next) {
-      $http
-        .get(vm.next)
-        .then(getMoreOk);
-    }
-
-    function getMoreOk(response) {
-      if (response.data && response.data.data && response.data.data.length) {
-        vm.likes = vm.likes.concat(response.data.data);
-        vm.next = response.data.paging.next;
-        graph.donut(svg, getGraphData(vm.likes));
-      }
-    }
-  }
-
   function setEvents(svg, data) {
     // set events
     var timeoutRef;
@@ -124,40 +142,10 @@ function facebookLikesController($scope, $element, $attrs, $facebook, $http, $ui
       clearTimeout(timeoutRef);
       timeoutRef = setTimeout(function() {
         svg.selectAll('g').remove();
-        graph.donut(svg, data);
+        activeModule.draw(svg, data);
       }, 100);
     });
 
     return {svg, data};
-  }
-
-  function getGraphData (data){
-    // count categories for each like
-    var categories = {};
-    data.map(function(like) {
-      if (categories[like.category]) {
-        ++categories[like.category];
-      } else {
-        categories[like.category] = 1;
-      }
-    });
-
-    var graphData = [];
-    angular.forEach(categories, function(count, key) {
-      var graphItem = {
-        id: graphData.length, // use array index as id
-        label: `${key} (${count})`,
-        value: count
-      };
-      graphData.push(graphItem);
-    });
-
-    // sort by value, ascendent
-    graphData.sort( (a, b) => a.value - b.value);
-
-    // keep highest only
-    graphData = graphData.slice(-vm.limit);
-
-    return graphData;
   }
 }

@@ -16,10 +16,10 @@ function graph() {
 
   //------------------------------
 
-  function createSvg(id) {
-    var svg = d3.select('#' + id)
+  function createSvg(el) {
+    var svg = d3.select(el)
       .append('svg')
-      .attr('id', 'svg-' + id)
+      // .attr('id', 'svg-' + id)
       .attr('style', 'font-family: "Helvetica Neue", Helvetica, Arial, sans-serif')
       .append('g');
 
@@ -27,8 +27,6 @@ function graph() {
   }
 
   function donut(svg, data) {
-    var id = svg.attr('id'); // TODO: remove?
-
     // add graph component containers
     svg.append('g').attr('class', 'slices');
     svg.append('g').attr('class', 'labels');
@@ -254,8 +252,7 @@ function graph() {
   }
 
   function getContainerWidth(svg) {
-    var id = svg.node().parentNode.id;
-    var width = $('#' + id).width() - 40;
+    var width = $(svg.node().parentNode).width() - 40;
     return width;
   }
 
@@ -266,8 +263,7 @@ function graph() {
   }
 
   function setContainerHeight(svg, height) {
-    var id = svg.node().parentNode.id;
-    $('#' + id).height(height);
+    $(svg.node().parentNode).height(height);
   }
 
   function getColor() {
@@ -277,9 +273,9 @@ function graph() {
     return scale;
   }
 
-  function createPng(id, callback) {
+  function createPng(svg, callback) {
     // get svg dimensions
-    var svg = d3.select('#svg-' + id);
+    var svg = d3.select(svg);
     var width = svg.style('width').replace('px', '');
     var height = svg.style('height').replace('px', '');
 
@@ -292,7 +288,6 @@ function graph() {
     
     var canvas = d3.select('body')
       .append('canvas')
-      .attr('id', 'canvas-' + id)
       .attr('style', 'display:none')
       .node();
     canvas.width = width;

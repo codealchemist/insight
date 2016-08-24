@@ -1,6 +1,6 @@
 <div class="facebook-insight facebook-likes jumbotron align-bottom">
 	<h4>
-		Your Likes By Category
+		Your Likes {{vm.moduleName}}
 		<i 
 			class="glyphicon glyphicon-btn glyphicon-plus"
 			ng-class="{'disabled': !vm.next}"
@@ -11,7 +11,7 @@
 		</i>
 	</h4>
 	<em>Last {{vm.likes.length}}</em>
-	<div id="facebook-likes-graph" class="facebook-likes-graph"></div>
+	<div id="{{vm.graphId}}" class="facebook-likes-graph"></div>
 	<em>Top {{vm.limit}}</em>
 
 	<br>
