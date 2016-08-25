@@ -3,24 +3,24 @@
 		Your Likes {{vm.moduleName}}
 		<i 
 			class="glyphicon glyphicon-btn glyphicon-plus"
-			ng-class="{'disabled': !vm.next}"
+			ng-class="{'disabled': !vm.module.next}"
 			title="Load more likes"
 			ng-click="vm.getMore()"
-			ng-disabled="!vm.next"
+			ng-disabled="!vm.module.next"
 		>
 		</i>
 	</h4>
-	<em>Last {{vm.likes.length}}</em>
-	<div id="{{vm.graphId}}" class="facebook-likes-graph"></div>
-	<em>Top {{vm.limit}}</em>
+	<em>Last {{vm.module.likes.length}}</em>
+	<div id="{{vm.module.graphId}}" class="facebook-likes-graph"></div>
+	<em>Top {{vm.module.limit}}</em>
 
 	<br>
 	<i 
 		class="glyphicon glyphicon-btn"
-		ng-class="{'glyphicon-refresh spinning disabled': vm.sharing, 'glyphicon-share': !vm.sharing}"
+		ng-class="{'glyphicon-refresh spinning disabled': vm.module.sharing, 'glyphicon-share': !vm.module.sharing}"
 		title="Show this to your friends!"
-		ng-click="!vm.sharing && vm.share()"
-		ng-disabled="vm.sharing"
+		ng-click="!vm.module.sharing && vm.share()"
+		ng-disabled="vm.module.sharing"
 	>
 	</i>	
 </div>

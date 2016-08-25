@@ -14,8 +14,7 @@ function facebookLikes($timeout) {
     templateUrl: 'facebook-likes/facebook-likes.html',
     restrict: 'E',
     scope: {
-      'module': '@',
-      'id': '@'
+      'module': '@'
     },
     controller: facebookLikesController,
     controllerAs: 'vm'
@@ -30,7 +29,7 @@ function facebookLikes($timeout) {
   }
 }
 
-function facebookLikesController($scope, $element, $attrs, $facebook, $http, $uibModal, graph, facebookLikesByCategory, facebookLikesByPopularity) {
+function facebookLikesController($scope, $element, $attrs, $facebook, $http, $uibModal, graph, facebookLikesByCategory, facebookLikesByUsername) {
   'ngInject';
 
   var activeModuleName = $scope.module;
@@ -42,7 +41,6 @@ function facebookLikesController($scope, $element, $attrs, $facebook, $http, $ui
   vm.next;
   vm.getMore;
   vm.share;
-  vm.graphId = 'facebook-likes-' + $scope.id;
 
   var svg;
   var fieldsArray = [
@@ -59,12 +57,12 @@ function facebookLikesController($scope, $element, $attrs, $facebook, $http, $ui
   // set available facebook-like modules
   var modules = {
     byCategory: facebookLikesByCategory,
-    byPopularity: facebookLikesByPopularity
+    byUsername: facebookLikesByUsername
   };
 
   // set active module
   var activeModule = modules[activeModuleName];
-  vm.module = activeModule;
+  vm.module = activeModule.vm;
   angular.merge(vm, activeModule.vm);
 
   // initialize
@@ -76,6 +74,9 @@ function facebookLikesController($scope, $element, $attrs, $facebook, $http, $ui
     // bind getMore to active module
     // refresh likes when active module gets more data
     vm.getMore = () => {
+      // no more likes
+      if (!activeModule.vm.next) return;
+
       activeModule.vm.getMore(svg)
         .then( () => vm.likes = activeModule.vm.likes );
     };

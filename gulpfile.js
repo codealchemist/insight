@@ -137,10 +137,15 @@ gulp.task('serve', ['clean', 'wiredep', 'styles', 'angular-templates', 'scripts'
   });
 
   gulp.watch([
-    'app/**/*.html',
+    'app/index.html',
     'app/**/*.{jpg,jpeg,png,gif,svg}',
     '.tmp/fonts/**/*'
   ]).on('change', reload);
+
+  gulp.watch('app/*.html', () => {
+    gulp.start('angular-templates');
+    reload();
+  });
 
   gulp.watch('app/**/*.scss', ['styles']);
   gulp.watch('app/**/*.js', ['scripts']);

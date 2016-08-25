@@ -2,11 +2,11 @@
 
 angular
   .module('facebookLikes')
-  .service('facebookLikesByPopularity', facebookLikesByPopularity);
+  .service('facebookLikesByUsername', facebookLikesByUsername);
 
 //------------------------------------------------------------
 
-function facebookLikesByPopularity($http, graph) {
+function facebookLikesByUsername($http, graph) {
   'ngInject';
 
   var vm = {};
@@ -15,7 +15,7 @@ function facebookLikesByPopularity($http, graph) {
   vm.next;
   vm.getMore = getMore;
   vm.share;
-  vm.moduleName = 'By Popularity';
+  vm.moduleName = 'By User';
 
   var service = {
     vm,
@@ -43,18 +43,19 @@ function facebookLikesByPopularity($http, graph) {
   }
 
   function getGraphData (data){
-    // count categories for each like
-    var categories = {};
+    // count likes per username
+    var usernames = {};
     data.map(function(like) {
-      if (categories[like.category]) {
-        ++categories[like.category];
+      if (!like.username) return; // skip likes where username is not available
+      if (usernames[like.username]) {
+        ++usernames[like.username];
       } else {
-        categories[like.category] = 1;
+        usernames[like.username] = 1;
       }
     });
 
     var graphData = [];
-    angular.forEach(categories, function(count, key) {
+    angular.forEach(usernames, function(count, key) {
       var graphItem = {
         id: graphData.length, // use array index as id
         label: `${key} (${count})`,
