@@ -7,6 +7,7 @@ const wiredep = require('wiredep').stream;
 const concat = require('gulp-concat');
 const uglifyjs = require('uglify-js-harmony');
 const minifier = require('gulp-uglify/minifier');
+const runSequence = require('run-sequence');
 
 const $ = gulpLoadPlugins();
 const reload = browserSync.reload;
@@ -142,9 +143,9 @@ gulp.task('serve', ['clean', 'wiredep', 'styles', 'angular-templates', 'scripts'
     '.tmp/fonts/**/*'
   ]).on('change', reload);
 
-  gulp.watch('app/*.html', () => {
-    gulp.start('angular-templates');
-    reload();
+  // watch angular templates
+  gulp.watch(['app/**/*.html', '!app/index.html'], () => {
+    runSequence('angular-templates', reload);
   });
 
   gulp.watch('app/**/*.scss', ['styles']);
