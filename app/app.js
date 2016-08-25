@@ -16,6 +16,7 @@ angular
     'facebookMe',
     'facebookFriends',
     'facebookLikes',
+    'facebookMostLiked',
     'dashboard'
   ])
 ;

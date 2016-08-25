@@ -1,0 +1,20 @@
+<div class="facebook-insight facebook-most-liked jumbotron inline-block" uib-tooltip="{{vm.mostLiked.about}}">
+  <i 
+    class="glyphicon glyphicon-btn glyphicon-plus tr"
+    ng-class="{'disabled': !vm.next}"
+    title="Load more likes"
+    ng-click="vm.getMore()"
+    ng-disabled="!vm.next"
+  >
+  </i>
+
+  <h4>
+    Most Liked
+    <a href="http://facebook.com/{{vm.mostLiked.id}}" target="_blank">
+      <i class="glyphicon glyphicon-globe"></i>
+    </a>
+  </h4>
+  <h1>{{vm.mostLiked.engagement.countString}}</h1>
+
+  <em class="ac">Last {{vm.likes.length}}</em>
+</div>

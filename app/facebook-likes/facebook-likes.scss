@@ -1,20 +1,5 @@
 .facebook-likes {
   height: 100%;
-
-  .glyphicon-btn {
-    background: white;
-    padding: 10px;
-    border-radius: 50%;
-    border: 1px solid rgba(0,0,0,0.7);
-    font-size: 12px;
-    cursor: pointer;
-
-    &.disabled {
-      color: #ccc;
-      border-color: #ccc;
-      cursor: default;
-    }
-  }
 }
 
 svg {
