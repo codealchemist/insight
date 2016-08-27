@@ -2,9 +2,13 @@
 Helps you better understand your Facebook world and habits.
 
 ---
-## THIS IS A MODULAR ANGULAR DEMO; STILL WORK IN PROGRESS.
-**Note:** If you're interested, it will be fully functional and have the minimun amount of features to match its description ;)
+## THIS IS A MODULAR ANGULAR DEMO.
+**Note:** If you're interested, it is already functional and provides some basic info about your Facebook usage.
 ---
+
+### Try it
+You can try the app here:
+https://appinsight.herokuapp.com
 
 ### What's Insight?
 
