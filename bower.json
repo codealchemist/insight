@@ -22,6 +22,9 @@
         "assets/fonts/bootstrap/*",
         "assets/javascripts/bootstrap.js"
       ]
+    },
+    "humanize-plus": {
+      "main": "dist/humanize.js"
     }
   },
   "devDependencies": {

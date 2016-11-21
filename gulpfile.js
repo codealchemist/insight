@@ -5,7 +5,7 @@ const browserSync = require('browser-sync');
 const del = require('del');
 const wiredep = require('wiredep').stream;
 const concat = require('gulp-concat');
-const uglifyjs = require('uglify-js-harmony');
+const uglifyjs = require('uglify-js');
 const minifier = require('gulp-uglify/minifier');
 const runSequence = require('run-sequence');
 
@@ -53,8 +53,7 @@ function lint(files, options) {
 gulp.task('lint', () => {
   return lint('app/**/*.js', {
     fix: true
-  })
-    .pipe(gulp.dest('app'));
+  });
 });
 gulp.task('lint:test', () => {
   return lint('test/spec/**/*.js', {
