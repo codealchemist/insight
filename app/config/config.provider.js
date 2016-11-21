@@ -18,7 +18,7 @@ function configProvider() {
         name: 'development',
         domains: ['localhost', '0.0.0.0', '127.0.0.1', 'insight.dev'],
         config: {
-          facebookAppId: '1624901197822863'
+          facebookAppId: '1682076408772008'
         }
       },
       {
