@@ -72,7 +72,7 @@ gulp.task('html', ['styles', 'angular-templates'], () => {
     .pipe($.size({showFiles: true}))
     .pipe($.if('scripts/*.js', $.babel({presets: ['es2015']}))) // need to transpile to avoid erros with object shorthand on uglify
     .pipe($.if('scripts/*.js', $.ngAnnotate()))
-    .pipe($.if('*.js', $.uglify()))
+    .pipe($.if('scripts/*.js', $.uglify()))
     .pipe($.if('*.css', $.cssnano({safe: true, autoprefixer: false})))
     .pipe($.if('*.html', $.htmlmin({collapseWhitespace: true})))
     .pipe($.size({showFiles: true}))
