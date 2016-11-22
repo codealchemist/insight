@@ -18,6 +18,7 @@ angular
     'facebookLikes',
     'facebookMostLiked',
     'facebookDevices',
+    'facebookCover',
     'dashboard'
   ])
 ;

@@ -1,0 +1,15 @@
+<div class="facebook-cover" style="background-image: url({{vm.coverUrl}})">
+  <i 
+    class="glyphicon glyphicon-btn glyphicon-open tr"
+    ng-class="{'disabled': !vm.coverUrl}"
+    title="Open cover in new tab"
+    ng-click="vm.openCover()"
+    ng-disabled="!vm.coverUrl"
+  >
+  </i>
+
+  <div class="facebook-cover-overlay"></div>
+  <div class="facebook-cover-content">
+    <ng-transclude></ng-transclude>
+  </div>
+</div>
